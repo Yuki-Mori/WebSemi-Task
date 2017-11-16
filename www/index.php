@@ -12,14 +12,17 @@ $analysis = explode('/', $_SERVER['REQUEST_URI']);
 $call;
 
 $i = 0;
-$url['req'] = '';
-$url['action'] = '';
-print_r($analysis);
+//print_r($analysis);
 foreach ($analysis as $value) {
 
     switch ($i){
         default:
             breka;
+        case 0:
+            $url['root'] = $value;
+            break;
+        case 1:
+            $url['head'] = $value;
         case 2:
             $url['req'] = $value;
             break;
@@ -29,25 +32,32 @@ foreach ($analysis as $value) {
     }
     $i++;
 }
-print_r($url);
+//print_r($url);
 
 //modelをインクルードします
+//print_r("debug\n");
+$debug = file_exists('./index.php');
+//print_r($debug);
 if (file_exists('./controllers/'.$url['req'].'.php')) {
 
-    include('./controllers/'.$url['req'].'.php');
+    include('./controllers/' . $url['req'] . '.php');
     //$call名のクラスをインスタンス化します
     $class = new $url['req']();
     //modelのindexメソッドを呼ぶ仕様です
-    $ret = $class->index($url['action'], $analysis, $_GET, $_POST);
-    //配列キーが設定されている配列なら展開します
-    /*if (!is_null($ret)) {
-        if(is_array($ret)){
-            extract($ret);
-        }
-    }*/
-    echo $ret;
+    //$ret = $class->index($url['action'], $analysis, $_GET, $_POST);
+    if($_SERVER["REQUEST_METHOD"] == "POST"){
+        $result = $class->POST($_POST);
+    }else{
+        $result = $class->GET($_GET);
+    }
+    //echo $result;
+}else if(empty($url['req'])){
+    echo "<h1>Hello!</h1>";
 }else{
-    include_once ('./views/error.php');
+    //echo "hello";
+    header('Location: http://www.google.com', true, 404);
+    http_response_code (404);
+    include('../404.html');
 }
 
 /*

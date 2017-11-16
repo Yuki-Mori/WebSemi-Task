@@ -1,3 +1,4 @@
 RewriteEngine on
-RewriteBase /semi07/
+RewriteBase /scheduler/
 RewriteRule ^(.*) index.php [L]
+ErrorDocument 404 ../404.html
